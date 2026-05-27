@@ -1,0 +1,259 @@
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
+.page-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url("LoginBG1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* Master Grid Aligning Dashboard content next to glass panel */
+.dashboard-grid {
+  width: 100%;
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Hero UI Elements styling */
+.hero-section {
+  color: #ffffff;
+  text-align: left;
+}
+
+.system-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 6px 18px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 20px;
+  line-height: 1.25;
+}
+
+.hero-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 580px;
+}
+
+/* Feature Grid section inside Hero layout */
+.roles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 500px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 14px 20px;
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease;
+}
+
+.role-card:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.role-icon {
+  font-size: 20px;
+}
+
+.role-card p {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 400;
+}
+
+/* Premium Sci-Fi Glass Card container styles */
+.glass-login-card {
+  width: 100%;
+  max-width: 440px;
+  justify-self: end;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  padding: 40px 36px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background overlay map hint style */
+.glass-login-card::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 100px;
+  height: 60px;
+  opacity: 0.15;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath fill='%23fff' d='M5,10 h4 v2 h-4 z M20,15 h10 v3 h-10 z M60,8 h15 v4 h-15 z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.input-field-group { 
+  margin-bottom: 20px; 
+}
+
+.input-field-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-field-group input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 14.5px;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.password-wrapper input {
+  padding-right: 44px;
+}
+
+.input-field-group input::placeholder { 
+  color: rgba(255, 255, 255, 0.35); 
+}
+
+.input-field-group input:focus { 
+  border-color: rgba(255, 255, 255, 0.5); 
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+/* Password eye button toggler styling */
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.password-toggle-btn:hover {
+  opacity: 1;
+}
+
+/* White Sign In Button style updates */
+.submit-signin-btn {
+  width: 100%;
+  margin-top: 16px;
+  background: #ffffff;
+  color: #111116;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submit-signin-btn:hover { 
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.error-message {
+  font-size: 12.5px;
+  color: #ff8a8a;
+  margin-bottom: 12px;
+}
+
+.card-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.register-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Media query adjustments for mobile/tablets */
+@media (max-width: 968px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .hero-section {
+    text-align: center;
+  }
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .roles-container {
+    margin: 0 auto;
+  }
+  .glass-login-card {
+    justify-self: center;
+  }
+}
