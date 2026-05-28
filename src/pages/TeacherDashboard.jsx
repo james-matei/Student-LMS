@@ -157,15 +157,15 @@ function TeacherDashboard() {
 
       {/* Sidebar */}
       <aside className="main-sidebar">
-        <div className="brand-header">🎓 EduSync</div>
+        <div className="brand-header">Mentora</div>
         <nav className="nav-menu">
-          <button className={activeTab === "overview"    ? "active" : ""} onClick={() => setActiveTab("overview")}>🎛️ Overview</button>
-          <button className={activeTab === "courses"     ? "active" : ""} onClick={() => setActiveTab("courses")}>📚 Courses</button>
-          <button className={activeTab === "lessons"     ? "active" : ""} onClick={() => setActiveTab("lessons")}>🎬 Lessons</button>
+          <button className={activeTab === "overview"    ? "active" : ""} onClick={() => setActiveTab("overview")}> Overview</button>
+          <button className={activeTab === "courses"     ? "active" : ""} onClick={() => setActiveTab("courses")}> Courses</button>
+          <button className={activeTab === "lessons"     ? "active" : ""} onClick={() => setActiveTab("lessons")}> Lessons</button>
           <button className={activeTab === "assignments" ? "active" : ""} onClick={() => setActiveTab("assignments")}>
-            📝 Assignments {pendingGrades > 0 && <span className="badge">{pendingGrades}</span>}
+             Assignments {pendingGrades > 0 && <span className="badge">{pendingGrades}</span>}
           </button>
-          <button className={activeTab === "quizzes"    ? "active" : ""} onClick={() => setActiveTab("quizzes")}>🧠 Quizzes</button>
+          <button className={activeTab === "quizzes"    ? "active" : ""} onClick={() => setActiveTab("quizzes")}> Quizzes</button>
         </nav>
         <div className="sidebar-footer">
           <span className="user-id">{teacherId}</span>
@@ -343,7 +343,7 @@ function TeacherDashboard() {
                         <span className="sub">📎 {s.file}</span>
                       </div>
                       {s.graded ? (
-                        <span className="grade-badge">✅ {s.grade}</span>
+                        <span className="grade-badge"> {s.grade}</span>
                       ) : (
                         <div className="grade-input-row">
                           <input

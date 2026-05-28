@@ -94,13 +94,13 @@ function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className="main-sidebar">
-        <div className="brand-header">🎓 EduSync</div>
+        <div className="brand-header"> Mentora</div>
         <nav className="nav-menu">
-          <button className={activeTab === "overview"       ? "active" : ""} onClick={() => setActiveTab("overview")}>🎛️ Overview</button>
-          <button className={activeTab === "users"          ? "active" : ""} onClick={() => setActiveTab("users")}>👥 Users</button>
-          <button className={activeTab === "courses"        ? "active" : ""} onClick={() => setActiveTab("courses")}>📚 Courses</button>
-          <button className={activeTab === "announcements"  ? "active" : ""} onClick={() => setActiveTab("announcements")}>📢 Announcements</button>
-          <button className={activeTab === "reports"        ? "active" : ""} onClick={() => setActiveTab("reports")}>📊 Reports</button>
+          <button className={activeTab === "overview"       ? "active" : ""} onClick={() => setActiveTab("overview")}> Overview</button>
+          <button className={activeTab === "users"          ? "active" : ""} onClick={() => setActiveTab("users")}>Users</button>
+          <button className={activeTab === "courses"        ? "active" : ""} onClick={() => setActiveTab("courses")}> Courses</button>
+          <button className={activeTab === "announcements"  ? "active" : ""} onClick={() => setActiveTab("announcements")}> Announcements</button>
+          <button className={activeTab === "reports"        ? "active" : ""} onClick={() => setActiveTab("reports")}> Reports</button>
         </nav>
         <div className="sidebar-footer">
           <span className="user-id">{adminId}</span>
@@ -113,7 +113,7 @@ function AdminDashboard() {
         <header className="dash-header">
           <h1>Admin Panel</h1>
           <div className="header-widgets">
-            <div className="token-pill">🔑 Administrator</div>
+            <div className="token-pill"> Administrator</div>
             <div className="avatar">{adminId.slice(0, 2).toUpperCase()}</div>
           </div>
         </header>
@@ -176,7 +176,7 @@ function AdminDashboard() {
 
             <input
               className="dash-input"
-              placeholder="🔍 Search by name or reg number..."
+              placeholder=" Search by name or reg number..."
               value={userSearch}
               onChange={e => setUserSearch(e.target.value)}
               style={{ marginBottom: 16, maxWidth: 360 }}
@@ -219,7 +219,7 @@ function AdminDashboard() {
                   <div className="card-top">
                     <span className="code">{c.code}</span>
                     <h3>{c.title}</h3>
-                    <p className="card-meta">👩‍🏫 {c.teacher} • {c.students} students</p>
+                    <p className="card-meta"> {c.teacher} • {c.students} students</p>
                   </div>
                   <div className="card-actions">
                     <span className={`pub-dot ${c.published ? "live" : "draft"}`}>

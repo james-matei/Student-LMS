@@ -136,7 +136,7 @@ function StudentDashboard() {
       {/* Sidebar */}
       <aside className="main-sidebar">
         <div className="brand-header">
-          <span className="brand-logo">🎓</span> EduSync
+          <span className="brand-logo"></span> Mentora
         </div>
         <nav className="nav-menu">
           <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}> Overview</button>
@@ -265,7 +265,7 @@ function StudentDashboard() {
                   <div className="actions">
                     {asm.status === "Pending" && (
                       <button className="upload-trigger-btn" onClick={() => handleFileUpload(asm.id)}>
-                        📤 Upload & Submit
+                         Upload & Submit
                       </button>
                     )}
                     {asm.status === "Submitted" && (
@@ -326,7 +326,7 @@ function StudentDashboard() {
                       disabled={tokens < item.cost || owned}
                       onClick={() => handleRedeem(item)}
                     >
-                      {owned ? "✅ Redeemed" : tokens < item.cost ? "Not enough tokens" : "Redeem Free"}
+                      {owned ? " Redeemed" : tokens < item.cost ? "Not enough tokens" : "Redeem Free"}
                     </button>
                   </div>
                 );
