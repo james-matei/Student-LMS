@@ -22,15 +22,14 @@ function Login() {
 
     // 🔄 Route based on prefix check
     if (standardInput.startsWith("s")) {
-      // PASS: Send user registration data over to the student dashboard view
-      navigate("/student", { state: { studentId: username.trim() } });
-    } else if (standardInput.startsWith("t")) {
-      setError("Teacher portal workspace is under construction.");
-    } else if (standardInput.startsWith("a")) {
-      setError("Admin terminal workspace is under construction.");
-    } else {
-      setError("Access Denied. Student registration numbers must begin with 's'.");
-    }
+  navigate("/student", { state: { studentId: username.trim() } });
+} else if (standardInput.startsWith("t")) {
+  navigate("/teacher", { state: { teacherId: username.trim() } });
+} else if (standardInput.startsWith("a")) {
+  navigate("/admin", { state: { adminId: username.trim() } });
+} else {
+  setError("Unrecognised prefix. Use S, T, or A.");
+}
   };
 
   return (
