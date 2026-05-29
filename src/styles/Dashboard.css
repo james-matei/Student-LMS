@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #cac6c6;
+  background: #eee7e7;
   color: #1e1e2e;
 }
 
@@ -334,19 +334,19 @@ body {
 
 .status-tag.submitted {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: #2e5cdb;
   border: 1px solid #bfdbfe;
 }
 
 .status-tag.graded {
   background: #dcfce7;
-  color: #16a34a;
+  color: #28bb5e;
   border: 1px solid #bbf7d0;
 }
 
 .grade-badge {
   font-size: 12px;
-  color: #16a34a;
+  color: #2fc867;
   font-weight: 600;
 }
 
@@ -373,14 +373,14 @@ body {
 
 .action-btn.drop {
   background: #fff1f2;
-  color: #e11d48;
+  color: #d3395b;
   border: 1px solid #fecdd3;
 }
 
 .mini-btn {
   background: #ebe9fd;
   border: 1px solid #c4b5fd;
-  color: #4f46e5;
+  color: #5b55e0;
   font-size: 11px;
   font-family: inherit;
   border-radius: 6px;
@@ -391,7 +391,7 @@ body {
 .view-all-btn {
   background: none;
   border: none;
-  color: #4f46e5;
+  color: #534bdd;
   font-size: 12px;
   font-family: inherit;
   cursor: pointer;
@@ -574,7 +574,7 @@ body {
 .dash-input option { background: #ffffff; color: #1e1e2e; }
 
 .add-btn {
-  background: #4f46e5;
+  background: #665ff2;
   border: none;
   color: #ffffff;
   font-size: 13px;
@@ -607,4 +607,4 @@ body {
   transition: border-color 0.15s, color 0.15s;
 }
 
-.file-label:hover { border-color: #4f46e5; color: #4f46e5; }
+.file-label:hover { border-color: #6962eb; color: #4f46e5; }
