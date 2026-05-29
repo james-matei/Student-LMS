@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./StudentDashboard.css";
+import "../styles/StudentDashboard.css";
+import "../styles/Dashboard.css";
 
 function StudentDashboard() {
   const location = useLocation();

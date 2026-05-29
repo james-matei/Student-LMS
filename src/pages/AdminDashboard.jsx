@@ -1,8 +1,9 @@
 // src/pages/AdminDashboard.jsx
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./StudentDashboard.css";
-import "./AdminDashboard.css";
+import "../styles/StudentDashboard.css";
+import "../styles/AdminDashboard.css";
+import "../styles/Dashboard.css";
 
 function AdminDashboard() {
   const location = useLocation();
@@ -254,7 +255,7 @@ function AdminDashboard() {
                   <option value="student">Students only</option>
                   <option value="teacher">Teachers only</option>
                 </select>
-                <button className="add-btn" onClick={addAnnouncement}>📢 Post</button>
+                <button className="add-btn" onClick={addAnnouncement}> Post</button>
               </div>
               <textarea
                 className="dash-input"

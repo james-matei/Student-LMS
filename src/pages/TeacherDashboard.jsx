@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./TeacherDashboard.css";
+import "../styles/TeacherDashboard.css";
+import "../styles/Dashboard.css";
 
 function TeacherDashboard() {
   const location = useLocation();
@@ -178,7 +179,7 @@ function TeacherDashboard() {
         <header className="dash-header">
           <h1>Teacher Dashboard</h1>
           <div className="header-widgets">
-            <div className="token-pill">👩‍🏫 Instructor</div>
+            <div className="token-pill"> Instructor</div>
             <div className="avatar">{teacherId.slice(0, 2).toUpperCase()}</div>
           </div>
         </header>
@@ -279,9 +280,9 @@ function TeacherDashboard() {
             <div className="form-row" style={{ marginTop: 16 }}>
               <input className="dash-input" placeholder="Lesson title" value={newLesson.title} onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })} />
               <select className="dash-input sm" value={newLesson.type} onChange={(e) => setNewLesson({ ...newLesson, type: e.target.value })}>
-                <option value="pdf">📄 PDF</option>
-                <option value="video">🎬 Video</option>
-                <option value="revision">📌 Revision</option>
+                <option value="pdf"> PDF</option>
+                <option value="video"> Video</option>
+                <option value="revision"> Revision</option>
               </select>
               <label className="file-label">
                 {newLesson.file ? newLesson.file.name : "Choose file"}
@@ -300,7 +301,7 @@ function TeacherDashboard() {
                       <span className="sub">{l.file}</span>
                     </div>
                     <span className={`status-tag ${l.type}`}>
-                      {l.type === "pdf" ? "📄 PDF" : l.type === "video" ? "🎬 Video" : "📌 Revision"}
+                      {l.type === "pdf" ? " PDF" : l.type === "video" ? " Video" : " Revision"}
                     </span>
                     <button className="action-btn drop" onClick={() => deleteLesson(l.id)}>Remove</button>
                   </div>

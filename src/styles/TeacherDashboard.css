@@ -1,0 +1,80 @@
+/* ─── Submission grading ─────────────────── */
+
+.submission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+.student-name {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.grade-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ─── Quiz builder ───────────────────────── */
+
+.quiz-builder {
+  background: #ffffff;
+  border: 1px solid #e0e2e7;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.question-block {
+  background: #f9fafb;
+  border: 1px solid #e0e2e7;
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.option-row input[type="radio"] {
+  accent-color: #4f46e5;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ─── Lesson type tags ───────────────────── */
+
+.status-tag.pdf {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.status-tag.video {
+  background: #fce7f3;
+  color: #be185d;
+  border: 1px solid #fbcfe8;
+}
+
+.status-tag.revision {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fde68a;
+}
