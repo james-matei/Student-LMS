@@ -42,5 +42,20 @@ public User getUserById(Long id) {
             .orElseThrow(() -> new RuntimeException("User not found"));
 }
 
+public User login(String regNO, String password) {
+
+    User user = userRepository.findByRegNO(regNO);
+
+    if (user == null) {
+        throw new RuntimeException("Invalid Registration Number");
+    }
+
+    if (!user.getPassword().equals(password)) {
+        throw new RuntimeException("Invalid Password");
+    }
+
+    return user;
+}
+
     
 }

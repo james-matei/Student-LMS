@@ -1,7 +1,7 @@
 package com.lms.backend.controller;
 
 import java.util.List;
-
+import com.lms.backend.dto.LoginRequest;
 import org.springframework.web.bind.annotation.*;
 
 import com.lms.backend.model.User;
@@ -42,6 +42,14 @@ public String deleteUser(@PathVariable Long id) {
 @GetMapping("/{id}")
 public User getUserById(@PathVariable Long id) {
     return userService.getUserById(id);
+}
+@PostMapping("/login")
+public User login(@RequestBody LoginRequest request) {
+
+    return userService.login(
+            request.getRegNO(),
+            request.getPassword()
+    );
 }
 
 }

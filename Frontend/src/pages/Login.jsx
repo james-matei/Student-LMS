@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Switched to Link to match React Router patterns
 import "../styles/Login.css";
+import { loginUser } from "../services/userService"; // Import the login function
 
 function Login() {
   const [regNO, setregNO] = useState("");
@@ -9,28 +10,47 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!regNO || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    setError("");
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // 💡 FIX: Create the missing variable from the entered regNO
-    const standardInput = regNO.trim().toLowerCase();
+  if (!regNO || !password) {
+    setError("Please fill in all fields.");
+    return;
+  }
 
-    // 🔄 Route based on prefix check
+  try {
+
+    const response = await loginUser(regNO, password);
+
+    const user = response.data;
+
+    const standardInput = user.regNO.toLowerCase();
+
     if (standardInput.startsWith("s")) {
-  navigate("/student", { state: { studentId: regNO.trim() } });
-} else if (standardInput.startsWith("t")) {
-  navigate("/teacher", { state: { teacherId: regNO.trim() } });
-} else if (standardInput.startsWith("a")) {
-  navigate("/admin", { state: { adminId: regNO.trim() } });
-} else {
-  setError("Unrecognised prefix. Use S, T, or A.");
-}
-  };
+      navigate("/student", {
+        state: { studentId: user.regNO }
+      });
+
+    } else if (standardInput.startsWith("t")) {
+
+      navigate("/teacher", {
+        state: { teacherId: user.regNO }
+      });
+
+    } else if (standardInput.startsWith("a")) {
+
+      navigate("/admin", {
+        state: { adminId: user.regNO }
+      });
+
+    }
+
+  } catch (err) {
+
+    setError("Invalid Registration Number or Password");
+
+  }
+};
 
   return (
     <div className="page-container">

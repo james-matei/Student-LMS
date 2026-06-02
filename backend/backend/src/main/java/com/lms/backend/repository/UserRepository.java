@@ -6,5 +6,5 @@ import com.lms.backend.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     
-
+User findByRegNO(String regNO);
 }
