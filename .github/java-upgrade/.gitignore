@@ -1,0 +1,25 @@
+
+# Node
+Frontend/node_modules/
+Frontend/dist/
+
+# React
+Frontend/.vite/
+
+# Spring Boot
+backend/target/
+backend/.mvn/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
