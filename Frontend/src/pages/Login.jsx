@@ -19,36 +19,22 @@ function Login() {
   }
 
   try {
-
     const response = await loginUser(regNO, password);
 
     const user = response.data;
+localStorage.setItem("user", JSON.stringify(user));
+    console.log(user);
 
-    const standardInput = user.regNO.toLowerCase();
-
-    if (standardInput.startsWith("s")) {
-      navigate("/student", {
-        state: { studentId: user.regNO }
-      });
-
-    } else if (standardInput.startsWith("t")) {
-
-      navigate("/teacher", {
-        state: { teacherId: user.regNO }
-      });
-
-    } else if (standardInput.startsWith("a")) {
-
-      navigate("/admin", {
-        state: { adminId: user.regNO }
-      });
-
+    if (user.role === "ROLE_STUDENT") {
+      navigate("/student");
+    } else if (user.role === "ROLE_TEACHER") {
+      navigate("/teacher");
+    } else if (user.role === "ROLE_ADMIN") {
+      navigate("/admin");
     }
 
-  } catch (err) {
-
+  } catch (error) {
     setError("Invalid Registration Number or Password");
-
   }
 };
 

@@ -5,6 +5,9 @@ import jakarta.persistence.*;
  @Table(name = "users")
 
 public class User {
+     public static final String ROLE_STUDENT = "ROLE_STUDENT";
+    public static final String ROLE_TEACHER = "ROLE_TEACHER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,16 +17,18 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private String role;
 
     public User() {
 
     }
 
-    public User(String regNO, String name, String email, String password) {
+    public User(String regNO, String name, String email, String password, String role) {
         this.regNO = regNO;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -55,6 +60,12 @@ public class User {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 
 

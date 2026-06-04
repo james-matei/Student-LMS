@@ -5,6 +5,7 @@ import Register from "../pages/Register";
 import StudentDashboard from "../pages/StudentDashboard";
 import TeacherDashboard from "../pages/TeacherDashboard";
 import AdminDashboard from "../pages/AdminDashboard";
+import ProtectedRoute from "../auth/ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -16,9 +17,15 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
 
         {/* Protected area (for now simple) */}
-        <Route path="/student" element={<StudentDashboard />} />
-        <Route path="/teacher" element={<TeacherDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/student" element={ <ProtectedRoute role="ROLE_STUDENT">
+              <StudentDashboard />
+            </ProtectedRoute>} />
+        <Route path="/teacher" element={<ProtectedRoute role="ROLE_TEACHER">
+              <TeacherDashboard />
+            </ProtectedRoute>} />
+        <Route path="/admin" element={ <ProtectedRoute role="ROLE_ADMIN">
+              <AdminDashboard />
+            </ProtectedRoute>} />
 
       </Routes>
     </BrowserRouter>

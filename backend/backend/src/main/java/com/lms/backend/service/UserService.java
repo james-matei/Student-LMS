@@ -3,6 +3,8 @@ package com.lms.backend.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.lms.backend.model.User;
 import com.lms.backend.repository.UserRepository;
@@ -15,6 +17,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
      public User saveUser(User user) {
+         user.setRole(User.ROLE_STUDENT);
         return userRepository.save(user);
     }
 
@@ -29,7 +32,7 @@ public class UserService {
     existingUser.setEmail(updatedUser.getEmail());
     existingUser.setRegNO(updatedUser.getRegNO());
     existingUser.setPassword(updatedUser.getPassword());
-
+    //existingUser.setRole(updatedUser.getRole());
     return userRepository.save(existingUser);
 }
 
@@ -56,6 +59,16 @@ public User login(String regNO, String password) {
 
     return user;
 }
+public User createTeacher(User user) {
+    user.setRole(User.ROLE_TEACHER);
+    return userRepository.save(user);
+}
+
+public User createAdmin(User user) {
+    user.setRole(User.ROLE_ADMIN);
+    return userRepository.save(user);
+}
+
 
     
 }
