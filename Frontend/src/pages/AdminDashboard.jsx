@@ -1,9 +1,11 @@
 // src/pages/AdminDashboard.jsx
-import { useState } from "react";
+import { useState ,useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/StudentDashboard.css";
 import "../styles/AdminDashboard.css";
 import "../styles/Dashboard.css";
+import {  createUser,  createTeacher,  createAdmin,  getAllUsers} from "../services/userService";
+
 
 function AdminDashboard() {
   const location = useLocation();
@@ -12,15 +14,27 @@ function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
 
   // ─── Users ─────────────────────────────────────────────
-  const [users, setUsers] = useState([
-    { id: 1, name: "Alex M.",     regNo: "S202609874", role: "student", status: "active" },
-    { id: 2, name: "Jordan K.",   regNo: "S202609875", role: "student", status: "active" },
-    { id: 3, name: "Dr. Sarah J.",regNo: "T202600123", role: "teacher", status: "active" },
-    { id: 4, name: "Prof. Dan W.",regNo: "T202600124", role: "teacher", status: "suspended" },
-    { id: 5, name: "Sam R.",      regNo: "S202609876", role: "student", status: "active" },
-  ]);
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    fetchUsers();
+}, []);
 
-  const [newUser, setNewUser] = useState({ name: "", regNo: "", role: "student" });
+const fetchUsers = async () => {
+    try {
+        const response = await getAllUsers();
+        setUsers(response.data);
+    } catch (error) {
+        console.error("Failed to load users", error);
+    }
+};
+
+  const [newUser, setNewUser] = useState({
+  name: "",
+  regNO: "",
+  email: "",
+  password: "",
+  role: "ROLE_STUDENT"
+});
   const [userSearch, setUserSearch] = useState("");
 
   // ─── Courses ───────────────────────────────────────────
@@ -41,19 +55,45 @@ function AdminDashboard() {
   // ─── Reports ───────────────────────────────────────────
   const reports = [
     { label: "Total Users",        value: users.length },
-    { label: "Active Students",    value: users.filter(u => u.role === "student" && u.status === "active").length },
-    { label: "Teachers",           value: users.filter(u => u.role === "teacher").length },
+    { label: "Active Students",    value: users.filter(u => u.role === "ROLE_STUDENT" && u.status === "active").length },
+    { label: "Teachers",           value: users.filter(u => u.role === "ROLE_TEACHER").length },
     { label: "Total Courses",      value: courses.length },
     { label: "Published Courses",  value: courses.filter(c => c.published).length },
     { label: "Suspended Accounts", value: users.filter(u => u.status === "suspended").length },
   ];
 
   // ─── User actions ──────────────────────────────────────
-  const addUser = () => {
-    if (!newUser.name || !newUser.regNo) return;
-    setUsers(prev => [...prev, { id: Date.now(), ...newUser, status: "active" }]);
-    setNewUser({ name: "", regNo: "", role: "student" });
-  };
+  const addUser = async () => {
+  try {
+
+    let response;
+
+    if (newUser.role === "ROLE_TEACHER") {
+      response = await createTeacher(newUser);
+    } else if (newUser.role === "ROLE_ADMIN") {
+      response = await createAdmin(newUser);
+    } else {
+       response = await createUser(newUser);
+    }
+   
+
+   await fetchUsers();
+
+    setNewUser({
+      name: "",
+      regNO: "",
+      email: "",
+      password: "",
+      role: "ROLE_STUDENT"
+    });
+
+    alert("User created successfully");
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to create user");
+  }
+};
 
   const toggleSuspend = (id) => {
     setUsers(prev => prev.map(u =>
@@ -87,7 +127,7 @@ function AdminDashboard() {
 
   const filteredUsers = users.filter(u =>
     u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.regNo.toLowerCase().includes(userSearch.toLowerCase())
+    u.regNO.toLowerCase().includes(userSearch.toLowerCase())
   );
 
   return (
@@ -138,7 +178,7 @@ function AdminDashboard() {
                   <div key={u.id} className="overview-row">
                     <span className={`role-dot ${u.role}`}>{u.role === "student" ? "S" : "T"}</span>
                     <span className="row-title">{u.name}</span>
-                    <span className="sub">{u.regNo}</span>
+                    <span className="sub">{u.regNO}</span>
                     <span className={`pub-dot ${u.status === "active" ? "live" : "draft"}`}>
                       {u.status}
                     </span>
@@ -166,11 +206,36 @@ function AdminDashboard() {
 
             <div className="form-row">
               <input className="dash-input" placeholder="Full name" value={newUser.name}  onChange={e => setNewUser({ ...newUser, name: e.target.value })} />
-              <input className="dash-input sm" placeholder="Reg No e.g. S202600001" value={newUser.regNo} onChange={e => setNewUser({ ...newUser, regNo: e.target.value })} />
+              <input
+  className="dash-input"
+  placeholder="Email"
+  value={newUser.email}
+  onChange={e =>
+    setNewUser({
+      ...newUser,
+      email: e.target.value
+    })
+  }
+/>
+<input
+  type="password"
+  className="dash-input"
+  placeholder="Password"
+  value={newUser.password}
+  onChange={e =>
+    setNewUser({
+      ...newUser,
+      password: e.target.value
+    })
+  }
+/>
+              <input className="dash-input sm" placeholder="Reg No e.g. S202600001" value={newUser.regNO} onChange={e => setNewUser({ ...newUser, regNO: e.target.value })} />
+              <input className="dash-input sm" placeholder="Email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
+              <input className="dash-input sm" placeholder="Password" type="password" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} />
               <select className="dash-input sm" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="admin">Admin</option>
+                <option value="ROLE_STUDENT">Student</option>
+                <option value="ROLE_TEACHER">Teacher</option>
+                <option value="ROLE_ADMIN">Admin</option>
               </select>
               <button className="add-btn" onClick={addUser}>+ Add User</button>
             </div>
@@ -194,7 +259,7 @@ function AdminDashboard() {
               {filteredUsers.map(u => (
                 <div key={u.id} className="table-row">
                   <span className="row-title">{u.name}</span>
-                  <span className="sub">{u.regNo}</span>
+                  <span className="sub">{u.regNO}</span>
                   <span className={`role-badge ${u.role}`}>{u.role}</span>
                   <span className={`pub-dot ${u.status === "active" ? "live" : "draft"}`}>{u.status}</span>
                   <div className="row-actions">

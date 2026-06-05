@@ -17,7 +17,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
      public User saveUser(User user) {
-         user.setRole(User.ROLE_STUDENT);
+        user.setStatus("ACTIVE");
+        if (user.getRole() == null) {
+             user.setRole(User.ROLE_STUDENT);
+        }
         return userRepository.save(user);
     }
 
@@ -68,7 +71,9 @@ public User createAdmin(User user) {
     user.setRole(User.ROLE_ADMIN);
     return userRepository.save(user);
 }
-
+public User createUser(User user) {
+    return userRepository.save(user);
+}
 
     
 }

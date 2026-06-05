@@ -51,6 +51,8 @@ public User login(@RequestBody LoginRequest request) {
             request.getPassword()
     );
 }
+
+
 @PostMapping("/create-teacher")
 public User createTeacher(@RequestBody User user) {
     return userService.createTeacher(user);
@@ -59,6 +61,11 @@ public User createTeacher(@RequestBody User user) {
 @PostMapping("/create-admin")
 public User createAdmin(@RequestBody User user) {
     return userService.createAdmin(user);
+}
+
+@PostMapping("/admin/create")
+public User admincreateUser(@RequestBody User user) {
+    return userService.saveUser(user);
 }
 
 }
