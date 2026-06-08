@@ -18,6 +18,8 @@ public class User {
     private String email;
     private String password;
     private String role;
+
+    @Column(nullable = false)
     private String status;
 
     public User() {
@@ -30,6 +32,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+
         this.status = status;
     }
 

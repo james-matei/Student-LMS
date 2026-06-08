@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/StudentDashboard.css";
 import "../styles/AdminDashboard.css";
 import "../styles/Dashboard.css";
-import {  createUser,  createTeacher,  createAdmin,  getAllUsers} from "../services/userService";
-
+import {  createUser,  createTeacher,  createAdmin,  getAllUsers, suspendUser, restoreUser, deleteUserById} from "../services/userService";
+import { getAllCourses, deleteCourseById} from "../services/courseService";
 
 function AdminDashboard() {
   const location = useLocation();
@@ -38,28 +38,51 @@ const fetchUsers = async () => {
   const [userSearch, setUserSearch] = useState("");
 
   // ─── Courses ───────────────────────────────────────────
-  const [courses, setCourses] = useState([
-    { id: 1, title: "Advanced Web UI Design",        code: "CS-402", teacher: "Dr. Sarah J.", students: 34, published: true  },
-    { id: 2, title: "Data Structures & Algorithms",  code: "CS-204", teacher: "Dr. Sarah J.", students: 28, published: true  },
-    { id: 3, title: "Machine Learning Foundations",  code: "AI-301", teacher: "Prof. Dan W.", students: 0,  published: false },
-  ]);
+ const [courses, setCourses] = useState([]);
+ useEffect(() => {
+    fetchCourses();
+}, []);
+
+const fetchCourses = async () => {
+    try {
+        const response = await getAllCourses();
+         console.log("COURSES FROM BACKEND:", response.data);
+        setCourses(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+const deleteCourse = async (id) => {
+    try {
+        await deleteCourseById(id);
+        await fetchCourses();
+    } catch (error) {
+        console.error(error);
+    }
+};
 
   // ─── Announcements ─────────────────────────────────────
-  const [announcements, setAnnouncements] = useState([
-    { id: 1, title: "Semester Start",      body: "The new semester begins June 1st. All students must be enrolled.", date: "2025-05-20", target: "all"     },
-    { id: 2, title: "Teacher PD Day",      body: "Professional development day on May 30th. No classes scheduled.",  date: "2025-05-22", target: "teacher" },
-  ]);
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+  fetchAnnouncements();
+}, []);
+
+const fetchAnnouncements = async () => {
+  const res = await getAnnouncements();
+  setAnnouncements(res.data);
+} ;
 
   const [newAnnouncement, setNewAnnouncement] = useState({ title: "", body: "", target: "all" });
 
   // ─── Reports ───────────────────────────────────────────
   const reports = [
     { label: "Total Users",        value: users.length },
-    { label: "Active Students",    value: users.filter(u => u.role === "ROLE_STUDENT" && u.status === "active").length },
+    { label: "Active Students",    value: users.filter(u => u.role === "ROLE_STUDENT" && u.status === "ACTIVE").length },
     { label: "Teachers",           value: users.filter(u => u.role === "ROLE_TEACHER").length },
     { label: "Total Courses",      value: courses.length },
     { label: "Published Courses",  value: courses.filter(c => c.published).length },
-    { label: "Suspended Accounts", value: users.filter(u => u.status === "suspended").length },
+    { label: "Suspended Accounts", value: users.filter(u => u.status === "SUSPENDED").length },
   ];
 
   // ─── User actions ──────────────────────────────────────
@@ -95,22 +118,42 @@ const fetchUsers = async () => {
   }
 };
 
-  const toggleSuspend = (id) => {
-    setUsers(prev => prev.map(u =>
-      u.id === id ? { ...u, status: u.status === "active" ? "suspended" : "active" } : u
-    ));
-  };
+const toggleSuspend = async (user) => {
+  try {
 
-  const deleteUser = (id) => setUsers(prev => prev.filter(u => u.id !== id));
+    if (user.status === "ACTIVE") {
+      await suspendUser(user.id);
+    } else {
+      await restoreUser(user.id);
+    }
 
-  // ─── Course actions ────────────────────────────────────
+    await fetchUsers();
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to update user status");
+  }
+};  
+
+   // ─── Course actions ────────────────────────────────────
   const toggleCourse = (id) => {
     setCourses(prev => prev.map(c =>
       c.id === id ? { ...c, published: !c.published } : c
     ));
   };
 
-  const deleteCourse = (id) => setCourses(prev => prev.filter(c => c.id !== id));
+  const deleteUser = async (id) => {
+  try {
+
+    await deleteUserById(id);
+
+    await fetchUsers();
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete user");
+  }
+};
 
   // ─── Announcement actions ──────────────────────────────
   const addAnnouncement = () => {
@@ -263,7 +306,7 @@ const fetchUsers = async () => {
                   <span className={`role-badge ${u.role}`}>{u.role}</span>
                   <span className={`pub-dot ${u.status === "active" ? "live" : "draft"}`}>{u.status}</span>
                   <div className="row-actions">
-                    <button className={`action-btn ${u.status === "active" ? "drop" : "enroll"}`} onClick={() => toggleSuspend(u.id)}>
+                    <button className={`action-btn ${u.status === "active" ? "drop" : "enroll"}`} onClick={() => toggleSuspend(u)}>
                       {u.status === "active" ? "Suspend" : "Restore"}
                     </button>
                     <button className="action-btn drop" onClick={() => deleteUser(u.id)}>Delete</button>
@@ -283,9 +326,9 @@ const fetchUsers = async () => {
               {courses.map(c => (
                 <div key={c.id} className="catalog-card">
                   <div className="card-top">
-                    <span className="code">{c.code}</span>
+                    <span className="code">{c.courseCode}</span>
                     <h3>{c.title}</h3>
-                    <p className="card-meta"> {c.teacher} • {c.students} students</p>
+                    <p className="card-meta"> {c.lecturer} • {c.students} students</p>
                   </div>
                   <div className="card-actions">
                     <span className={`pub-dot ${c.published ? "live" : "draft"}`}>

@@ -64,14 +64,35 @@ public User login(String regNO, String password) {
 }
 public User createTeacher(User user) {
     user.setRole(User.ROLE_TEACHER);
+    user.setStatus("ACTIVE");
     return userRepository.save(user);
 }
 
 public User createAdmin(User user) {
     user.setRole(User.ROLE_ADMIN);
+    user.setStatus("ACTIVE");
     return userRepository.save(user);
 }
 public User createUser(User user) {
+    return userRepository.save(user);
+}
+public User suspendUser(Long id) {
+
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    user.setStatus("SUSPENDED");
+
+    return userRepository.save(user);
+}
+
+public User restoreUser(Long id) {
+
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    user.setStatus("ACTIVE");
+
     return userRepository.save(user);
 }
 

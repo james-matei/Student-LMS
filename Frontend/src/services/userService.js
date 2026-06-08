@@ -21,3 +21,15 @@ export const createAdmin = (userData) => {
 export const getAllUsers = () => {
     return api.get("/users");
 };
+
+export const suspendUser = (id) => {
+    return api.put(`/users/${id}/suspend`);
+};
+
+export const restoreUser = (id) => {
+    return api.put(`/users/${id}/restore`);
+};
+
+export const deleteUserById = (id) => {
+    return api.delete(`/users/${id}`);
+};

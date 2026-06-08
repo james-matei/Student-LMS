@@ -68,4 +68,15 @@ public User admincreateUser(@RequestBody User user) {
     return userService.saveUser(user);
 }
 
+@PutMapping("/{id}/suspend")
+public User suspendUser(@PathVariable Long id) {
+    return userService.suspendUser(id);
+}
+
+@PutMapping("/{id}/restore")
+public User restoreUser(@PathVariable Long id) {
+    return userService.restoreUser(id);
+}
+
+
 }

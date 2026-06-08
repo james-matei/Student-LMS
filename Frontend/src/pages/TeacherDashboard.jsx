@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {getAllCourses,createCourse,deleteCourseById} from "../services/courseService";
 import "../styles/TeacherDashboard.css";
 import "../styles/Dashboard.css";
 
@@ -10,20 +11,19 @@ function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
 
   // ─── Courses ───────────────────────────────────────────
-  const [courses, setCourses] = useState([
-    {
-      id: 1, title: "Advanced Web UI Design", code: "CS-402",
-      students: 34, lessons: 12, published: true,
-    },
-    {
-      id: 2, title: "Data Structures & Algorithms", code: "CS-204",
-      students: 28, lessons: 9, published: true,
-    },
-    {
-      id: 3, title: "Machine Learning Foundations", code: "AI-301",
-      students: 0, lessons: 4, published: false,
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
+useEffect(() => {
+    fetchCourses();
+}, []);
+
+const fetchCourses = async () => {
+    try {
+        const response = await getAllCourses();
+        setCourses(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
 
   const [newCourse, setNewCourse] = useState({ title: "", code: "" });
 
@@ -74,22 +74,19 @@ function TeacherDashboard() {
   });
 
   // ─── Course actions ────────────────────────────────────
-  const addCourse = () => {
-    if (!newCourse.title || !newCourse.code) return;
-    setCourses((prev) => [
-      ...prev,
-      { id: Date.now(), title: newCourse.title, code: newCourse.code, students: 0, lessons: 0, published: false },
-    ]);
-    setNewCourse({ title: "", code: "" });
-  };
+  const addCourse = async () => {
+   await createCourse(newCourse);
+   fetchCourses();
+};
 
   const togglePublish = (id) => {
     setCourses((prev) => prev.map((c) => c.id === id ? { ...c, published: !c.published } : c));
   };
 
-  const deleteCourse = (id) => {
-    setCourses((prev) => prev.filter((c) => c.id !== id));
-  };
+  const deleteCourse = async (id) => {
+   await deleteCourseById(id);
+   fetchCourses();
+};
 
   // ─── Lesson actions ────────────────────────────────────
   const addLesson = () => {
