@@ -3,11 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {getAllCourses,createCourse,deleteCourseById} from "../services/courseService";
 import "../styles/TeacherDashboard.css";
 import "../styles/Dashboard.css";
+console.log("Full location state:", location.state);
+
 
 function TeacherDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [teacherId] = useState(location.state?.teacherId || "T202600123");
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const [teacherId] = useState(storedUser.regNO || "Unknown");
+  const [teacherDbId] = useState(storedUser.id || null); 
   const [activeTab, setActiveTab] = useState("overview");
 
   // ─── Courses ───────────────────────────────────────────
@@ -24,8 +28,8 @@ const fetchCourses = async () => {
         console.error(error);
     }
 };
-
-  const [newCourse, setNewCourse] = useState({ title: "", code: "" });
+  
+  const [newCourse, setNewCourse] = useState({ title: "", courseCode: "", lecturerId:null });
 
   // ─── Lessons ───────────────────────────────────────────
   const [lessons, setLessons] = useState([
@@ -75,8 +79,20 @@ const fetchCourses = async () => {
 
   // ─── Course actions ────────────────────────────────────
   const addCourse = async () => {
-   await createCourse(newCourse);
+      console.log("addCourse called");
+    console.log("title:", newCourse.title);
+    console.log("courseCode:", newCourse.courseCode);
+    console.log("teacherDbId:", teacherDbId);
+   if (!newCourse.title || !newCourse.courseCode) return;
+   console.log("teacherDbId:", teacherDbId);
+    try{
+      await createCourse({ title: newCourse.title, courseCode: newCourse.courseCode, lecturerId: teacherDbId });
    fetchCourses();
+    }catch(error){
+      console.error("Full error:", error.response?.data);
+    }
+    console.log("dbId from state:", location.state?.dbId);
+   
 };
 
   const togglePublish = (id) => {
@@ -167,7 +183,10 @@ const fetchCourses = async () => {
         </nav>
         <div className="sidebar-footer">
           <span className="user-id">{teacherId}</span>
-          <button className="logout-btn" onClick={() => navigate("/")}>Logout</button>
+          <button className="logout-btn" onClick={() =>  {
+    localStorage.removeItem("user");
+    navigate("/");
+}}>Logout</button>
         </div>
       </aside>
 
@@ -208,7 +227,7 @@ const fetchCourses = async () => {
                 <h2 className="pane-title">Your Courses</h2>
                 {courses.map((c) => (
                   <div key={c.id} className="overview-row">
-                    <span className="code">{c.code}</span>
+                    <span className="code">{c.courseCode}</span>
                     <span className="row-title">{c.title}</span>
                     <span className={`pub-dot ${c.published ? "live" : "draft"}`}>
                       {c.published ? "Live" : "Draft"}
@@ -239,7 +258,7 @@ const fetchCourses = async () => {
 
             <div className="form-row">
               <input className="dash-input" placeholder="Course title" value={newCourse.title} onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })} />
-              <input className="dash-input sm" placeholder="Code e.g. CS-101" value={newCourse.code} onChange={(e) => setNewCourse({ ...newCourse, code: e.target.value })} />
+              <input className="dash-input sm" placeholder="Code e.g. CS-101" value={newCourse.courseCode} onChange={(e) => setNewCourse({ ...newCourse, courseCode: e.target.value })} />
               <button className="add-btn" onClick={addCourse}>+ Add Course</button>
             </div>
 

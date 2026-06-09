@@ -168,10 +168,10 @@ const toggleSuspend = async (user) => {
 
   const deleteAnnouncement = (id) => setAnnouncements(prev => prev.filter(a => a.id !== id));
 
-  const filteredUsers = users.filter(u =>
-    u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.regNO.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  const filteredUsers = (users || []).filter(u =>
+  (u?.name || "").toLowerCase().includes((userSearch || "").toLowerCase()) ||
+  (u?.regNO || "").toLowerCase().includes((userSearch || "").toLowerCase())
+);
 
   return (
     <div className="dashboard-container">
@@ -249,29 +249,8 @@ const toggleSuspend = async (user) => {
 
             <div className="form-row">
               <input className="dash-input" placeholder="Full name" value={newUser.name}  onChange={e => setNewUser({ ...newUser, name: e.target.value })} />
-              <input
-  className="dash-input"
-  placeholder="Email"
-  value={newUser.email}
-  onChange={e =>
-    setNewUser({
-      ...newUser,
-      email: e.target.value
-    })
-  }
-/>
-<input
-  type="password"
-  className="dash-input"
-  placeholder="Password"
-  value={newUser.password}
-  onChange={e =>
-    setNewUser({
-      ...newUser,
-      password: e.target.value
-    })
-  }
-/>
+          
+
               <input className="dash-input sm" placeholder="Reg No e.g. S202600001" value={newUser.regNO} onChange={e => setNewUser({ ...newUser, regNO: e.target.value })} />
               <input className="dash-input sm" placeholder="Email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
               <input className="dash-input sm" placeholder="Password" type="password" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} />
@@ -328,7 +307,7 @@ const toggleSuspend = async (user) => {
                   <div className="card-top">
                     <span className="code">{c.courseCode}</span>
                     <h3>{c.title}</h3>
-                    <p className="card-meta"> {c.lecturer} • {c.students} students</p>
+                    <p className="card-meta"> {c.lecturer?.name || "No lecturer"} • {c.students} students</p>
                   </div>
                   <div className="card-actions">
                     <span className={`pub-dot ${c.published ? "live" : "draft"}`}>
@@ -431,7 +410,7 @@ const toggleSuspend = async (user) => {
                 <h2 className="pane-title">Course Status</h2>
                 {courses.map(c => (
                   <div key={c.id} className="overview-row">
-                    <span className="code">{c.code}</span>
+                    <span className="code">{c.courseCode}</span>
                     <span className="row-title">{c.title}</span>
                     <span className={`pub-dot ${c.published ? "live" : "draft"}`}>
                       {c.published ? "Live" : "Draft"}

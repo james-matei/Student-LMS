@@ -28,7 +28,7 @@ localStorage.setItem("user", JSON.stringify(user));
     if (user.role === "ROLE_STUDENT") {
       navigate("/student");
     } else if (user.role === "ROLE_TEACHER") {
-      navigate("/teacher");
+      navigate("/teacher", { state: { teacherId: user.regNO, dbId:user.id } });
     } else if (user.role === "ROLE_ADMIN") {
       navigate("/admin");
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.lms.backend.dto.CourseRequest;
 import com.lms.backend.model.Course;
 import com.lms.backend.service.CourseService;
 
@@ -19,8 +20,8 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course createCourse(@RequestBody Course course) {
-        return courseService.createCourse(course);
+    public Course createCourse(@RequestBody CourseRequest request) {
+        return courseService.createCourse(request);
     }
 
     @GetMapping
@@ -28,10 +29,20 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
+
+    @GetMapping("/lecturer/{id}")
+    public List<Course> getByLecturer(@PathVariable Long id) {
+        return courseService.getCoursesByLecturer(id);
+    }
+
     @DeleteMapping("/{id}")
     public String deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return "Course deleted";
+    }
+  @PutMapping("/{id}/toggle")
+    public Course toggle(@PathVariable Long id) {
+        return courseService.togglePublish(id);
     }
 
     @PutMapping("/{id}")

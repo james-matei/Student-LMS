@@ -1,6 +1,7 @@
 package com.lms.backend.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "courses")
@@ -14,22 +15,26 @@ public class Course {
 
     private String title;
 
-    private String lecturer;
+    private Integer students =0;
 
-    private Integer students;
+    private boolean published =false;
 
-    private boolean published;
+    @ManyToOne
+    @JoinColumn(name = "lecturer_id")
+    @JsonIgnoreProperties({ "password", "courses", "hibernateLazyInitializer"})
+    private User lecturer;
+
 
     public Course() {
     }
 
     public Course(String courseCode, String title,
-                  String lecturer, Integer students,
+                  User lecturer, Integer students,
                   boolean published) {
         this.courseCode = courseCode;
         this.title = title;
+        this.students = 0;
         this.lecturer = lecturer;
-        this.students = students;
         this.published = published;
     }
 
@@ -57,13 +62,6 @@ public class Course {
         this.title = title;
     }
 
-    public String getLecturer() {
-        return lecturer;
-    }
-
-    public void setLecturer(String lecturer) {
-        this.lecturer = lecturer;
-    }
 
     public Integer getStudents() {
         return students;
@@ -79,5 +77,13 @@ public class Course {
 
     public void setPublished(boolean published) {
         this.published = published;
+    }
+
+    public User getLecturer() {
+        return lecturer;
+    }
+
+    public void setLecturer(User lecturer) {
+        this.lecturer = lecturer;
     }
 }

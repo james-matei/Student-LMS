@@ -4,8 +4,18 @@ export const getAllCourses = () => {
   return api.get("/courses");
 };
 
-export const createCourse = (course) => {
-  return api.post("/courses", course);
+export const createCourse = async (course) => {
+  console.log("createCourse called with:", course);  // add
+  try {
+    const result = await api.post("/courses", course);
+    console.log("api.post succeeded:", result.data);  // add
+    return result;
+  } catch (err) {
+    console.error("api.post error message:", err.message);  // add
+    console.error("api.post error code:", err.code);        // add
+    console.error("api.post full error:", err);             // add
+    throw err;
+  }
 };
 
 export const deleteCourseById = (id) => {
