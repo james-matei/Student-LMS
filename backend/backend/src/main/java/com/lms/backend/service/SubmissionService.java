@@ -1,16 +1,12 @@
 package com.lms.backend.service;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import com.lms.backend.dto.SubmissionRequest;
-import com.lms.backend.model.Assignment;
-import com.lms.backend.model.Submission;
-import com.lms.backend.model.User;
-import com.lms.backend.repository.AssignmentRepository;
-import com.lms.backend.repository.SubmissionRepository;
-import com.lms.backend.repository.UserRepository;
+import org.springframework.web.multipart.MultipartFile;
+import com.lms.backend.model.*;
+import com.lms.backend.repository.*;
 
 @Service
 public class SubmissionService {
@@ -19,73 +15,62 @@ public class SubmissionService {
     private final AssignmentRepository assignmentRepository;
     private final UserRepository userRepository;
 
-    public SubmissionService(
-            SubmissionRepository submissionRepository,
-            AssignmentRepository assignmentRepository,
-            UserRepository userRepository
-    ) {
+    private final String uploadDir = "uploads/submissions/";
+
+    public SubmissionService(SubmissionRepository submissionRepository,
+                             AssignmentRepository assignmentRepository,
+                             UserRepository userRepository) {
         this.submissionRepository = submissionRepository;
         this.assignmentRepository = assignmentRepository;
         this.userRepository = userRepository;
     }
 
-    // =========================
-    // CREATE SUBMISSION (DTO)
-    // =========================
-    public Submission createSubmission(SubmissionRequest request) {
-
-        Assignment assignment = assignmentRepository.findById(request.getAssignmentId())
+    // Student submits a file
+    public Submission submit(Long studentId, Long assignmentId, MultipartFile file) throws IOException {
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Assignment not found"));
 
-        User student = userRepository.findById(request.getStudentId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        // save file to disk
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
-        Submission submission = new Submission();
-        submission.setFileName(request.getFileName());
-        submission.setAssignment(assignment);
-        submission.setStudent(student);
+        String fileName = studentId + "_" + assignmentId + "_" + file.getOriginalFilename();
+        Files.copy(file.getInputStream(), uploadPath.resolve(fileName),
+                StandardCopyOption.REPLACE_EXISTING);
 
+        // overwrite if already submitted
+        Submission submission = submissionRepository
+                .findByStudentIdAndAssignmentId(studentId, assignmentId)
+                .orElse(new Submission(fileName, student, assignment));
+
+        submission.setFileName(fileName);
+        submission.setStatus("SUBMITTED");
         return submissionRepository.save(submission);
     }
 
-    // =========================
-    // READ ALL
-    // =========================
-    public List<Submission> getAllSubmissions() {
-        return submissionRepository.findAll();
+    // Teacher grades a submission
+    public Submission grade(Long submissionId, String grade) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new RuntimeException("Submission not found"));
+        submission.setGrade(grade);
+        submission.setStatus("GRADED");
+        return submissionRepository.save(submission);
     }
 
-    // =========================
-    // BY ASSIGNMENT
-    // =========================
-    public List<Submission> getSubmissionsByAssignment(Long assignmentId) {
+    // Get all submissions for an assignment (teacher view)
+    public List<Submission> getByAssignment(Long assignmentId) {
         return submissionRepository.findByAssignmentId(assignmentId);
     }
 
-    // =========================
-    // BY STUDENT
-    // =========================
-    public List<Submission> getSubmissionsByStudent(Long studentId) {
+    // Get all submissions by a student (student view)
+    public List<Submission> getByStudent(Long studentId) {
         return submissionRepository.findByStudentId(studentId);
     }
 
-    // =========================
-    // DELETE
-    // =========================
-    public void deleteSubmission(Long id) {
-        submissionRepository.deleteById(id);
-    }
-
-    // =========================
-    // GRADE SUBMISSION
-    // =========================
-    public Submission gradeSubmission(Long id, String grade) {
-
-        Submission submission = submissionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Submission not found"));
-
-        submission.setGrade(grade);
-
-        return submissionRepository.save(submission);
+    // Get all submissions for a course (teacher dashboard)
+    public List<Submission> getByCourse(Long courseId) {
+        return submissionRepository.findByAssignmentCourseId(courseId);
     }
 }

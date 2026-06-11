@@ -5,7 +5,7 @@ import "../styles/StudentDashboard.css";
 import "../styles/AdminDashboard.css";
 import "../styles/Dashboard.css";
 import {  createUser,  createTeacher,  createAdmin,  getAllUsers, suspendUser, restoreUser, deleteUserById} from "../services/userService";
-import { getAllCourses, deleteCourseById} from "../services/courseService";
+import { getAllCourses, deleteCourseById, togglePublishCourse} from "../services/courseService";
 
 function AdminDashboard() {
   const location = useLocation();
@@ -52,6 +52,7 @@ const fetchCourses = async () => {
         console.error(error);
     }
 };
+
 const deleteCourse = async (id) => {
     try {
         await deleteCourseById(id);
@@ -136,11 +137,14 @@ const toggleSuspend = async (user) => {
 };  
 
    // ─── Course actions ────────────────────────────────────
-  const toggleCourse = (id) => {
-    setCourses(prev => prev.map(c =>
-      c.id === id ? { ...c, published: !c.published } : c
-    ));
-  };
+  const toggleCourse = async (id) => {
+    try {
+        await togglePublishCourse(id);
+        fetchCourses();
+    } catch (error) {
+        console.error("Toggle failed:", error);
+    }
+};
 
   const deleteUser = async (id) => {
   try {

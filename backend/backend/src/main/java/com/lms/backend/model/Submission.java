@@ -1,7 +1,8 @@
 package com.lms.backend.model;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "submissions")
@@ -12,87 +13,42 @@ public class Submission {
     private Long id;
 
     private String fileName;
-
     private String grade;
-
-    private boolean graded;
-
-
-
-    private LocalDateTime submissionDate; 
-    @PrePersist
-public void prePersist() {
-    this.submissionDate = LocalDateTime.now();
-}
+    private String status;  // SUBMITTED, GRADED
+    private LocalDateTime submittedAt;
 
     @ManyToOne
-    private Assignment assignment;
-
-    @ManyToOne
+    @JoinColumn(name = "student_id")
+    @JsonIgnoreProperties({"password", "hibernateLazyInitializer"})
     private User student;
 
-    public Submission() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "assignment_id")
+    @JsonIgnoreProperties({"course", "hibernateLazyInitializer"})
+    private Assignment assignment;
 
-    public Submission(String fileName, Assignment assignment, User student, LocalDateTime submissionDate) {
+    public Submission() {}
+
+    public Submission(String fileName, User student, Assignment assignment) {
         this.fileName = fileName;
-        this.assignment = assignment;
         this.student = student;
-        this.submissionDate = submissionDate;
-        this.graded = false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getGrade() {
-        return grade;
-    }
-
-    public void setGrade(String grade) {
-        this.grade = grade;
-        this.graded = true;
-    }
-
-    public boolean isGraded() {
-        return graded;
-    }
-
-    public Assignment getAssignment() {
-        return assignment;
-    }
-
-    public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
+        this.status = "SUBMITTED";
+        this.submittedAt = LocalDateTime.now();
     }
 
-    public User getStudent() {
-        return student;
-    }
-
-    public void setStudent(User student) {
-        this.student = student;
-    }
-
-    public LocalDateTime getSubmissionDate() {
-        return submissionDate;
-    }
-
-    public void setSubmissionDate(LocalDateTime submissionDate) {
-        this.submissionDate = submissionDate;
-    }
-
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+    public String getGrade() { return grade; }
+    public void setGrade(String grade) { this.grade = grade; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getSubmittedAt() { return submittedAt; }
+    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+    public User getStudent() { return student; }
+    public void setStudent(User student) { this.student = student; }
+    public Assignment getAssignment() { return assignment; }
+    public void setAssignment(Assignment assignment) { this.assignment = assignment; }
 }

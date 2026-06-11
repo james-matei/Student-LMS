@@ -1,5 +1,7 @@
 package com.lms.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 
@@ -21,6 +23,7 @@ public class Lesson {
 
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @JsonIgnoreProperties({"lecturer", "hibernateLazyInitializer"})
     private Course course;
 
 

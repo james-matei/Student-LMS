@@ -1,6 +1,7 @@
 package com.lms.backend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "assignments")
@@ -13,17 +14,20 @@ public class Assignment {
     private String title;
 
     private LocalDate dueDate;
-
+    private Integer tokenReward = 0; 
     @ManyToOne
+    @JoinColumn(name = "course_id")
+    @JsonIgnoreProperties({"lecturer", "hibernateLazyInitializer"})
     private Course course;
 
     public Assignment() {
     }
 
-    public Assignment(String title, LocalDate dueDate, Course course) {
+    public Assignment(String title, LocalDate dueDate, Course course, Integer tokenReward) {
         this.title = title;
         this.dueDate = dueDate;
         this.course = course;
+        this.tokenReward = tokenReward;
     }
 
     public Long getId() {
@@ -56,5 +60,12 @@ public class Assignment {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+    public Integer getTokenReward() {
+        return tokenReward;
+    }
+
+    public void setTokenReward(Integer tokenReward) {
+        this.tokenReward = tokenReward;
     }
 }   

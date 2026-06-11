@@ -21,3 +21,6 @@ export const createCourse = async (course) => {
 export const deleteCourseById = (id) => {
   return api.delete(`/courses/${id}`);
 };
+export const togglePublishCourse = (id) => {
+  return api.put(`/courses/${id}/toggle`);
+};
