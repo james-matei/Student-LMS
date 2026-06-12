@@ -36,7 +36,7 @@ public class SubmissionService {
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
-        String fileName = studentId + "_" + assignmentId + "_" + file.getOriginalFilename();
+        String fileName = studentId + "_" + assignmentId + "_" + file.getOriginalFilename().replaceAll("\\s+", "_");
         Files.copy(file.getInputStream(), uploadPath.resolve(fileName),
                 StandardCopyOption.REPLACE_EXISTING);
 

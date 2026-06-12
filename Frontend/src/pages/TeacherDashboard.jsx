@@ -104,7 +104,7 @@ function TeacherDashboard() {
 
   // ─── Assignments ───────────────────────────────────────
   const [assignments, setAssignments] = useState([]);
-  const [submissions, setSubmissions] = useState({}); // { assignmentId: [submissions] }
+  const [submissions, setSubmissions] = useState({});
   const [newAssignment, setNewAssignment] = useState({ title: "", courseId: "", dueDate: "", tokenReward: 0 });
   const [selectedAssignmentCourseId, setSelectedAssignmentCourseId] = useState(null);
 
@@ -113,8 +113,8 @@ function TeacherDashboard() {
   const fetchAssignments = async () => {
     try {
       const response = await getAllAssignments();
+      console.log("Assignments loaded:", response.data);
       setAssignments(response.data);
-      // fetch submissions for each assignment
       response.data.forEach((a) => fetchSubmissionsForAssignment(a.id));
     } catch (error) {
       console.error("Failed to load assignments:", error);
@@ -131,18 +131,27 @@ function TeacherDashboard() {
   };
 
   const addAssignment = async () => {
-    if (!newAssignment.title || !newAssignment.courseId || !newAssignment.dueDate) return;
+    if (!newAssignment.title || !newAssignment.courseId || !newAssignment.dueDate) {
+      console.log("Missing fields — courseId:", newAssignment.courseId);
+      return;
+    }
+
+    const payload = {
+      title: newAssignment.title,
+      dueDate: newAssignment.dueDate,
+      tokenReward: Number(newAssignment.tokenReward) || 0,
+      courseId: Number(newAssignment.courseId)
+    };
+
+    console.log("Payload JSON:", JSON.stringify(payload));
+
     try {
-      await createAssignment({
-        title: newAssignment.title,
-        dueDate: newAssignment.dueDate,
-        tokenReward: Number(newAssignment.tokenReward),
-        course: { id: Number(newAssignment.courseId) }
-      });
+      await createAssignment(payload);
       setNewAssignment({ title: "", courseId: "", dueDate: "", tokenReward: 0 });
       fetchAssignments();
     } catch (error) {
       console.error("Failed to create assignment:", error.response?.data);
+      console.error("Full error:", JSON.stringify(error.response?.data));
     }
   };
 
@@ -165,12 +174,11 @@ function TeacherDashboard() {
     }
   };
 
-  // pending grades across all assignments
   const pendingGrades = Object.values(submissions)
     .flat()
     .filter((s) => s.status === "SUBMITTED").length;
 
-  // ─── Quizzes (local state for now) ─────────────────────
+  // ─── Quizzes ───────────────────────────────────────────
   const [quizzes, setQuizzes] = useState([
     {
       id: 1, courseId: 1, title: "CSS Fundamentals Quiz",
@@ -358,7 +366,6 @@ function TeacherDashboard() {
           <div className="tab-view animate-fade">
             <h2 className="pane-title">Assignments & Grading</h2>
 
-            {/* Create assignment form */}
             <div className="form-row">
               <input className="dash-input" placeholder="Assignment title"
                 value={newAssignment.title}
@@ -378,7 +385,6 @@ function TeacherDashboard() {
               <button className="add-btn" onClick={addAssignment}>+ Add</button>
             </div>
 
-            {/* Filter by course */}
             <div className="form-row" style={{ marginTop: 12 }}>
               <select className="dash-input sm"
                 value={selectedAssignmentCourseId || ""}
@@ -438,6 +444,9 @@ function TeacherDashboard() {
                     </div>
                   );
                 })}
+              {assignments.length === 0 && (
+                <p className="empty-note">No assignments yet.</p>
+              )}
             </div>
           </div>
         )}

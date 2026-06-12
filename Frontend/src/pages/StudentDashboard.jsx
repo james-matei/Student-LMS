@@ -97,7 +97,9 @@ function StudentDashboard() {
 
   const fetchAssignments = async (courseId) => {
     try {
+       console.log("Fetching assignments for courseId:", courseId);
       const response = await getAssignmentsByCourse(courseId);
+      console.log("Assignments received:", response.data);
       setAssignments(response.data);
     } catch (error) {
       console.error("Failed to load assignments:", error);
@@ -125,6 +127,8 @@ function StudentDashboard() {
       fetchMySubmissions();
     } catch (error) {
       console.error("Submission failed:", error.response?.data);
+      console.error("Submission status:", error.response?.status);
+        console.error("Submission message:", error.message); 
     }
   };
 

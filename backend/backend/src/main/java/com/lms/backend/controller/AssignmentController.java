@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.lms.backend.model.Assignment;
 import com.lms.backend.service.AssignmentService;
+import com.lms.backend.dto.AssignmentRequest;
 
 @RestController
 @RequestMapping("/api/assignments")
@@ -19,8 +20,8 @@ public class AssignmentController {
     }
 
     @PostMapping
-    public Assignment createAssignment(@RequestBody Assignment assignment) {
-        return assignmentService.createAssignment(assignment);
+    public Assignment createAssignment(@RequestBody AssignmentRequest request) {
+        return assignmentService.createAssignment(request);
     }
 
     @GetMapping
@@ -41,9 +42,12 @@ public class AssignmentController {
 @PutMapping("/{id}")
 public Assignment updateAssignment(
         @PathVariable Long id,
-        @RequestBody Assignment assignment) {
+        @RequestBody AssignmentRequest request) {
 
-    return assignmentService.updateAssignment(id, assignment);
+    return assignmentService.updateAssignment(id, request);
+
 }
+
+
 
 }
