@@ -95,6 +95,21 @@ public User restoreUser(Long id) {
 
     return userRepository.save(user);
 }
+public User addTokens(Long userId, Integer amount) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    user.setTokens((user.getTokens() == null ? 0 : user.getTokens()) + amount);
+    return userRepository.save(user);
+}
+
+public User spendTokens(Long userId, Integer amount) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    int current = user.getTokens() == null ? 0 : user.getTokens();
+    if (current < amount) throw new RuntimeException("Insufficient tokens");
+    user.setTokens(current - amount);
+    return userRepository.save(user);
+}
 
     
 }

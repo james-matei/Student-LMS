@@ -33,3 +33,12 @@ export const restoreUser = (id) => {
 export const deleteUserById = (id) => {
     return api.delete(`/users/${id}`);
 };
+
+export const addTokens = (userId, amount) =>
+    api.put(`/users/${userId}/tokens/add?amount=${amount}`);
+
+export const spendTokens = (userId, amount) =>
+    api.put(`/users/${userId}/tokens/spend?amount=${amount}`);
+
+export const getTokenBalance = (userId) =>
+    api.get(`/users/${userId}/tokens`);

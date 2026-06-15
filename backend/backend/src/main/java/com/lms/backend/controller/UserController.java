@@ -78,5 +78,19 @@ public User restoreUser(@PathVariable Long id) {
     return userService.restoreUser(id);
 }
 
+@PutMapping("/{id}/tokens/add")
+public User addTokens(@PathVariable Long id, @RequestParam Integer amount) {
+    return userService.addTokens(id, amount);
+}
+
+@PutMapping("/{id}/tokens/spend")
+public User spendTokens(@PathVariable Long id, @RequestParam Integer amount) {
+    return userService.spendTokens(id, amount);
+}
+
+@GetMapping("/{id}/tokens")
+public Integer getTokens(@PathVariable Long id) {
+    return userService.getUserById(id).getTokens();
+}
 
 }

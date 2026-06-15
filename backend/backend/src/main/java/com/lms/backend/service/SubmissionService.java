@@ -14,18 +14,20 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final AssignmentRepository assignmentRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     private final String uploadDir = "uploads/submissions/";
 
     public SubmissionService(SubmissionRepository submissionRepository,
                              AssignmentRepository assignmentRepository,
-                             UserRepository userRepository) {
+                             UserRepository userRepository,
+                             UserService userService) {
         this.submissionRepository = submissionRepository;
         this.assignmentRepository = assignmentRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
-    // Student submits a file
     public Submission submit(Long studentId, Long assignmentId, MultipartFile file) throws IOException {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -36,21 +38,32 @@ public class SubmissionService {
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
-        String fileName = studentId + "_" + assignmentId + "_" + file.getOriginalFilename().replaceAll("\\s+", "_");
+        String fileName = studentId + "_" + assignmentId + "_" +
+                file.getOriginalFilename().replaceAll("\\s+", "_");
         Files.copy(file.getInputStream(), uploadPath.resolve(fileName),
                 StandardCopyOption.REPLACE_EXISTING);
 
-        // overwrite if already submitted
+        // check if first submission to avoid awarding tokens twice
+        boolean isFirstSubmission = submissionRepository
+                .findByStudentIdAndAssignmentId(studentId, assignmentId)
+                .isEmpty();
+
         Submission submission = submissionRepository
                 .findByStudentIdAndAssignmentId(studentId, assignmentId)
                 .orElse(new Submission(fileName, student, assignment));
 
         submission.setFileName(fileName);
         submission.setStatus("SUBMITTED");
-        return submissionRepository.save(submission);
+        Submission saved = submissionRepository.save(submission);
+
+        // award tokens only on first submission
+        if (isFirstSubmission && assignment.getTokenReward() != null && assignment.getTokenReward() > 0) {
+            userService.addTokens(studentId, assignment.getTokenReward());
+        }
+
+        return saved;
     }
 
-    // Teacher grades a submission
     public Submission grade(Long submissionId, String grade) {
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new RuntimeException("Submission not found"));
@@ -59,17 +72,14 @@ public class SubmissionService {
         return submissionRepository.save(submission);
     }
 
-    // Get all submissions for an assignment (teacher view)
     public List<Submission> getByAssignment(Long assignmentId) {
         return submissionRepository.findByAssignmentId(assignmentId);
     }
 
-    // Get all submissions by a student (student view)
     public List<Submission> getByStudent(Long studentId) {
         return submissionRepository.findByStudentId(studentId);
     }
 
-    // Get all submissions for a course (teacher dashboard)
     public List<Submission> getByCourse(Long courseId) {
         return submissionRepository.findByAssignmentCourseId(courseId);
     }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllCourses, createCourse, deleteCourseById, togglePublishCourse } from "../services/courseService";
+import { getAllCourses,getCoursesByLecturer, createCourse, deleteCourseById, togglePublishCourse } from "../services/courseService";
 import { getLessonsByCourse, createLesson, deleteLessonById } from "../services/lessonService";
 import { getAllAssignments, createAssignment, deleteAssignmentById } from "../services/assignmentService";
 import { getSubmissionsByAssignment, gradeSubmission } from "../services/submissionService";
@@ -17,16 +17,20 @@ function TeacherDashboard() {
   // ─── Courses ───────────────────────────────────────────
   const [courses, setCourses] = useState([]);
 
-  useEffect(() => { fetchCourses(); }, []);
+ useEffect(() => {
+  if (teacherDbId) {
+    fetchCourses();
+  }
+}, [teacherDbId]);
 
   const fetchCourses = async () => {
-    try {
-      const response = await getAllCourses();
-      setCourses(response.data);
-    } catch (error) {
-      console.error("Failed to load courses:", error);
-    }
-  };
+  try {
+    const response = await getCoursesByLecturer(teacherDbId);
+    setCourses(response.data);
+  } catch (error) {
+    console.error("Failed to load courses:", error);
+  }
+};
 
   const [newCourse, setNewCourse] = useState({ title: "", courseCode: "" });
 
@@ -113,7 +117,6 @@ function TeacherDashboard() {
   const fetchAssignments = async () => {
     try {
       const response = await getAllAssignments();
-      console.log("Assignments loaded:", response.data);
       setAssignments(response.data);
       response.data.forEach((a) => fetchSubmissionsForAssignment(a.id));
     } catch (error) {
@@ -132,26 +135,21 @@ function TeacherDashboard() {
 
   const addAssignment = async () => {
     if (!newAssignment.title || !newAssignment.courseId || !newAssignment.dueDate) {
-      console.log("Missing fields — courseId:", newAssignment.courseId);
+      console.log("Missing fields");
       return;
     }
-
     const payload = {
       title: newAssignment.title,
       dueDate: newAssignment.dueDate,
       tokenReward: Number(newAssignment.tokenReward) || 0,
       courseId: Number(newAssignment.courseId)
     };
-
-    console.log("Payload JSON:", JSON.stringify(payload));
-
     try {
       await createAssignment(payload);
       setNewAssignment({ title: "", courseId: "", dueDate: "", tokenReward: 0 });
       fetchAssignments();
     } catch (error) {
       console.error("Failed to create assignment:", error.response?.data);
-      console.error("Full error:", JSON.stringify(error.response?.data));
     }
   };
 
@@ -178,48 +176,6 @@ function TeacherDashboard() {
     .flat()
     .filter((s) => s.status === "SUBMITTED").length;
 
-  // ─── Quizzes ───────────────────────────────────────────
-  const [quizzes, setQuizzes] = useState([
-    {
-      id: 1, courseId: 1, title: "CSS Fundamentals Quiz",
-      questions: [
-        { q: "What does CSS stand for?", options: ["Cascading Style Sheets", "Computer Style System", "Creative Style Syntax", "Cascading System Style"], answer: 0 },
-        { q: "Which property controls text color?", options: ["font-color", "color", "text-color", "style"], answer: 1 },
-      ],
-    },
-  ]);
-
-  const [buildingQuiz, setBuildingQuiz] = useState({
-    title: "", courseId: "",
-    questions: [{ q: "", options: ["", "", "", ""], answer: 0 }],
-  });
-
-  const updateQuestion = (index, field, value) => {
-    setBuildingQuiz((prev) => {
-      const questions = [...prev.questions];
-      if (field === "q") questions[index].q = value;
-      else if (field === "answer") questions[index].answer = Number(value);
-      else {
-        const [, optIdx] = field.split("-");
-        questions[index].options[Number(optIdx)] = value;
-      }
-      return { ...prev, questions };
-    });
-  };
-
-  const addQuestion = () => {
-    setBuildingQuiz((prev) => ({
-      ...prev,
-      questions: [...prev.questions, { q: "", options: ["", "", "", ""], answer: 0 }],
-    }));
-  };
-
-  const saveQuiz = () => {
-    if (!buildingQuiz.title) return;
-    setQuizzes((prev) => [...prev, { ...buildingQuiz, id: Date.now(), courseId: Number(buildingQuiz.courseId) }]);
-    setBuildingQuiz({ title: "", courseId: "", questions: [{ q: "", options: ["", "", "", ""], answer: 0 }] });
-  };
-
   return (
     <div className="dashboard-container">
 
@@ -233,7 +189,6 @@ function TeacherDashboard() {
           <button className={activeTab === "assignments" ? "active" : ""} onClick={() => setActiveTab("assignments")}>
              Assignments {pendingGrades > 0 && <span className="badge">{pendingGrades}</span>}
           </button>
-          <button className={activeTab === "quizzes"    ? "active" : ""} onClick={() => setActiveTab("quizzes")}> Quizzes</button>
         </nav>
         <div className="sidebar-footer">
           <span className="user-id">{teacherId}</span>
@@ -404,7 +359,7 @@ function TeacherDashboard() {
                       <div className="assignment-header">
                         <h4>{a.title}</h4>
                         <span className="sub">
-                          {a.course?.courseCode} • Due: {a.dueDate} • {a.tokenReward} tokens • {assignmentSubmissions.length} submission{assignmentSubmissions.length !== 1 ? "s" : ""}
+                          {a.course?.courseCode} • Due: {a.dueDate} • ✨ {a.tokenReward} tokens • {assignmentSubmissions.length} submission{assignmentSubmissions.length !== 1 ? "s" : ""}
                         </span>
                         <button className="action-btn drop" style={{ marginTop: 6 }} onClick={() => deleteAssignment(a.id)}>Delete</button>
                       </div>
@@ -444,55 +399,7 @@ function TeacherDashboard() {
                     </div>
                   );
                 })}
-              {assignments.length === 0 && (
-                <p className="empty-note">No assignments yet.</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Quizzes ── */}
-        {activeTab === "quizzes" && (
-          <div className="tab-view animate-fade">
-            <h2 className="pane-title">Quizzes</h2>
-            <div className="assignments-stack" style={{ marginBottom: 28 }}>
-              {quizzes.map((q) => (
-                <div key={q.id} className="assignment-block">
-                  <div className="assignment-header">
-                    <h4>{q.title}</h4>
-                    <span className="sub">{courses.find((c) => c.id === q.courseId)?.courseCode} • {q.questions.length} questions</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="quiz-builder">
-              <h2 className="pane-title">Build a Quiz</h2>
-              <div className="form-row">
-                <input className="dash-input" placeholder="Quiz title" value={buildingQuiz.title} onChange={(e) => setBuildingQuiz({ ...buildingQuiz, title: e.target.value })} />
-                <select className="dash-input sm" value={buildingQuiz.courseId} onChange={(e) => setBuildingQuiz({ ...buildingQuiz, courseId: e.target.value })}>
-                  <option value="">-- Course --</option>
-                  {courses.map((c) => <option key={c.id} value={c.id}>{c.courseCode}</option>)}
-                </select>
-              </div>
-              {buildingQuiz.questions.map((q, i) => (
-                <div key={i} className="question-block">
-                  <input className="dash-input" placeholder={`Question ${i + 1}`} value={q.q} onChange={(e) => updateQuestion(i, "q", e.target.value)} />
-                  <div className="options-grid">
-                    {q.options.map((opt, j) => (
-                      <div key={j} className="option-row">
-                        <input type="radio" name={`correct-${i}`} checked={q.answer === j} onChange={() => updateQuestion(i, "answer", j)} />
-                        <input className="dash-input" placeholder={`Option ${j + 1}`} value={opt} onChange={(e) => updateQuestion(i, `opt-${j}`, e.target.value)} />
-                      </div>
-                    ))}
-                  </div>
-                  <p className="empty-note" style={{ marginTop: 4 }}>Select the radio button next to the correct answer.</p>
-                </div>
-              ))}
-              <div className="form-row" style={{ marginTop: 12 }}>
-                <button className="add-btn" onClick={addQuestion}>+ Add Question</button>
-                <button className="add-btn save" onClick={saveQuiz}>💾 Save Quiz</button>
-              </div>
+              {assignments.length === 0 && <p className="empty-note">No assignments yet.</p>}
             </div>
           </div>
         )}

@@ -24,3 +24,5 @@ export const deleteCourseById = (id) => {
 export const togglePublishCourse = (id) => {
   return api.put(`/courses/${id}/toggle`);
 };
+export const getCoursesByLecturer = (lecturerId) =>
+    axios.get(`${API_URL}/lecturer/${lecturerId}`);

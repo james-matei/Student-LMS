@@ -5,6 +5,7 @@ import { getAllCourses } from "../services/courseService";
 import { enrollInCourse, unenrollFromCourse, getMyEnrollments } from "../services/enrollmentService";
 import { getAssignmentsByCourse } from "../services/assignmentService";
 import { submitAssignment, getMySubmissions } from "../services/submissionService";
+import { addTokens, spendTokens, getTokenBalance } from "../services/userService";
 import "../styles/StudentDashboard.css";
 import "../styles/Dashboard.css";
 
@@ -13,9 +14,23 @@ function StudentDashboard() {
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const [studentRegNo] = useState(storedUser.regNO || "Unknown");
   const [studentDbId] = useState(storedUser.id || null);
-  const [tokens, setTokens] = useState(120);
+  const [tokens, setTokens] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
   const [newMessage, setNewMessage] = useState("");
+
+
+  useEffect(() => {
+    if (studentDbId) fetchTokenBalance();
+}, [studentDbId]);
+
+const fetchTokenBalance = async () => {
+    try {
+        const response = await getTokenBalance(studentDbId);
+        setTokens(response.data);
+    } catch (error) {
+        console.error("Failed to load tokens:", error);
+    }
+};
 
   // ─── Courses ───────────────────────────────────────────
   const [courses, setCourses] = useState([]);
@@ -120,11 +135,11 @@ function StudentDashboard() {
     try {
       await submitAssignment(studentDbId, assignmentId, uploadFile);
       // add token reward
-      const assignment = assignments.find((a) => a.id === assignmentId);
-      if (assignment?.tokenReward) setTokens((t) => t + assignment.tokenReward);
+     
       setUploadFile(null);
       setUploadingId(null);
-      fetchMySubmissions();
+      await fetchMySubmissions();
+      await fetchTokenBalance();
     } catch (error) {
       console.error("Submission failed:", error.response?.data);
       console.error("Submission status:", error.response?.status);
@@ -151,12 +166,16 @@ function StudentDashboard() {
     { id: 4, title: "Clean Code Handbook", cost: 60 },
   ];
 
-  const handleRedeem = (item) => {
-    if (tokens >= item.cost && !redeemed.includes(item.id)) {
-      setTokens((t) => t - item.cost);
-      setRedeemed((prev) => [...prev, item.id]);
+  const handleRedeem = async (item) => {
+    if (tokens < item.cost || redeemed.includes(item.id)) return;
+    try {
+        await spendTokens(studentDbId, item.cost);
+        setRedeemed((prev) => [...prev, item.id]);
+        await fetchTokenBalance(); // refresh from DB
+    } catch (error) {
+        console.error("Redeem failed:", error.response?.data);
     }
-  };
+};
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;

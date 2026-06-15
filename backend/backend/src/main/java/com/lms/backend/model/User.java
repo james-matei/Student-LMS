@@ -18,6 +18,7 @@ public class User {
     private String email;
     private String password;
     private String role;
+    private Integer tokens = 0;
 
     @Column(nullable = false)
     private String status;
@@ -26,12 +27,13 @@ public class User {
 
     }
 
-    public User(String regNO, String name, String email, String password, String role, String status) {
+    public User(String regNO, String name, String email, String password, String role, String status, Integer tokens) {
         this.regNO = regNO;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.tokens = tokens;
 
         this.status = status;
     }
@@ -77,6 +79,13 @@ public class User {
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getTokens() {
+        return tokens;
+    }
+    public void setTokens(Integer tokens) {
+        this.tokens = tokens;
     }
 
 
